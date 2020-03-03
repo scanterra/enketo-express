@@ -85,7 +85,7 @@ function setEventHandlers() {
         const icon = document.querySelector( '.side-slider__toggle' ).cloneNode( true );
         icon.removeAttribute( 'aria-label' );
         icon.style.position = 'static';
-        icon.style[ 'margin-top' ] = '10px';
+        icon.style[ 'margin' ] = '10px auto';
         icon.style.display = 'block';
         icon.disabled = true;
         const msg = t( 'alert.savedraftinfo.msg', {
