@@ -8,7 +8,7 @@ import { init as initTranslator, t, localize } from './module/translator';
 import store from './module/store';
 import utils from './module/utils';
 import formCache from './module/form-cache';
-import appCache from './module/application-cache';
+import applicationCache from './module/application-cache';
 
 const $loader = $( '.main-loader' );
 const $formheader = $( '.main > .paper > .form-header' );
@@ -27,7 +27,9 @@ if ( settings.offline ) {
     delete survey.serverUrl;
     delete survey.xformId;
     delete survey.xformUrl;
-    initTranslator( survey )
+    _setAppCacheEventHandlers();
+    applicationCache.init( survey )
+        .then( initTranslator )
         .then( formCache.init )
         .then( _addBranding )
         .then( _swapTheme )
@@ -37,8 +39,6 @@ if ( settings.offline ) {
         .then( s => {
             _updateMaxSizeSetting( s.maxSize );
             _setFormCacheEventHandlers();
-            _setAppCacheEventHandlers();
-            appCache.init();
         } )
         .catch( _showErrorOrAuthenticate );
 } else {
@@ -61,6 +61,7 @@ function _updateMaxSizeSetting( maxSize ) {
     }
 }
 
+
 function _showErrorOrAuthenticate( error ) {
     error = ( typeof error === 'string' ) ? new Error( error ) : error;
     console.error( error, error.stack );
@@ -73,6 +74,33 @@ function _showErrorOrAuthenticate( error ) {
 }
 
 function _setAppCacheEventHandlers() {
+    //if ( 'serviceWorker' in navigator ) {
+
+    console.log( 'adding listener for service worker messages' );
+    const channel = new BroadcastChannel( 'enketo-sw-messages' );
+    channel.addEventListener( 'message', event => {
+        console.log( 'Received', event.data );
+        console.log( 'offlineLaunchCapable?', event.data.OfflineLaunchCapable );
+    } );
+    // navigator.serviceWorker.addEventListener( 'message', event => {
+    //    console.log( 'offlineLaunchCapable?', event.data.OfflineLaunchCapable );
+    // } );
+    //}
+
+    /* 
+    document.addEventListener( events.OfflineLaunchCapable().type, event => {
+        const capable = event.detail;
+        console.log( 'offlinelaunchcapable ?', capable );
+        gui.updateStatus.offlineCapable( capable );
+        // TODO
+        // connection.getManifestVersion( $( 'html' ).attr( 'manifest' ) )
+        //        .then( gui.updateStatus.applicationVersion );
+    } );
+    document.addEventListener( events.ApplicationUpdated().type, () => {
+        gui.feedback( t( 'alert.appupdated.msg' ), 20, t( 'alert.appupdated.heading' ) );
+    } );
+*/
+    /* 
     $( document )
         .on( 'offlinelaunchcapable', () => {
             console.log( 'This form is fully offline-capable!' );
@@ -87,6 +115,7 @@ function _setAppCacheEventHandlers() {
         .on( 'applicationupdated', () => {
             gui.feedback( t( 'alert.appupdated.msg' ), 20, t( 'alert.appupdated.heading' ) );
         } );
+        */
 }
 
 function _setFormCacheEventHandlers() {
