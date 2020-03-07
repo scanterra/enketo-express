@@ -33,7 +33,7 @@ self.addEventListener( 'fetch', event => {
             }
             return fetch( event.request, { credentials: 'include' } )
                 .then( response => {
-                    if ( event.request.url.startsWith( '/x/' ) ) {
+                    if ( event.request.url.includes( '/x/' ) ) {
                         console.error( 'Resource missing from cache?', event.request.url );
                     }
                     // Check if we received a valid response
