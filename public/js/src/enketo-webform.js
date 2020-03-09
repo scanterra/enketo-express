@@ -7,6 +7,7 @@ import { FormModel } from 'enketo-core/src/js/form-model';
 import { init as initTranslator, t, localize } from './module/translator';
 import store from './module/store';
 import utils from './module/utils';
+import events from './module/event';
 import formCache from './module/form-cache';
 import applicationCache from './module/application-cache';
 
@@ -73,24 +74,12 @@ function _showErrorOrAuthenticate( error ) {
     }
 }
 
+// TODO: does it make more sense to let application-cache.js take care of this, and not need the 2 custom events?
 function _setAppCacheEventHandlers() {
-    //if ( 'serviceWorker' in navigator ) {
 
-    console.log( 'adding listener for service worker messages' );
-    const channel = new BroadcastChannel( 'enketo-sw-messages' );
-    channel.addEventListener( 'message', event => {
-        console.log( 'Received', event.data );
-        console.log( 'offlineLaunchCapable?', event.data.OfflineLaunchCapable );
-    } );
-    // navigator.serviceWorker.addEventListener( 'message', event => {
-    //    console.log( 'offlineLaunchCapable?', event.data.OfflineLaunchCapable );
-    // } );
-    //}
-
-    /* 
     document.addEventListener( events.OfflineLaunchCapable().type, event => {
-        const capable = event.detail;
-        console.log( 'offlinelaunchcapable ?', capable );
+        const capable = event.detail.capable;
+
         gui.updateStatus.offlineCapable( capable );
         // TODO
         // connection.getManifestVersion( $( 'html' ).attr( 'manifest' ) )
@@ -99,8 +88,8 @@ function _setAppCacheEventHandlers() {
     document.addEventListener( events.ApplicationUpdated().type, () => {
         gui.feedback( t( 'alert.appupdated.msg' ), 20, t( 'alert.appupdated.heading' ) );
     } );
-*/
-    /* 
+
+    /*
     $( document )
         .on( 'offlinelaunchcapable', () => {
             console.log( 'This form is fully offline-capable!' );

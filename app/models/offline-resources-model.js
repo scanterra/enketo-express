@@ -1,5 +1,5 @@
 /**
- * @module manifest-model
+ * @module offline-resources-model
  */
 
 const libxml = require( 'libxslt' ).libxmljs;
@@ -27,7 +27,8 @@ if ( process.env.NODE_ENV === 'test' ) {
  * @param {string} lang
  * @return {Promise} Promise that resolves with manifest
  */
-function getManifest( html1, html2, lang ) {
+
+function get( html1, html2, lang ) {
     const resourcesKey = `off:${lang}_resources`;
     const versionKey = `off:${lang}_version`;
 
@@ -107,7 +108,6 @@ function getManifest( html1, html2, lang ) {
     } );
 
 }
-
 
 /**
  * @param {string} versionKey
@@ -316,6 +316,4 @@ function _calculateHash( html1, html2, resources ) {
     return utils.md5( hash );
 }
 
-module.exports = {
-    get: getManifest
-};
+module.exports = { get };

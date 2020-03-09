@@ -2,7 +2,7 @@
  * Deals with storing the app using service workers.
  */
 
-//import events from './event';
+import events from './event';
 
 function init( survey ) {
     console.log( ' loading service worker' );
@@ -11,9 +11,28 @@ function init( survey ) {
             navigator.serviceWorker.register( '/x/offline-app-worker.js' ).then( function( registration ) {
                 // Registration was successful
                 console.log( 'ServiceWorker registration successful with scope: ', registration.scope );
+                setInterval( () => registration.update, 60 * 60 * 1000 ); // DEBUG set to 1 minute to test updates during session
+                console.log( 'active service worker', registration.active );
+                if ( registration.active ) {
+                    _reportOfflineLaunchCapable();
+                }
+                registration.addEventListener( 'updatefound', () => {
+                    const newWorker = registration.installing;
+
+                    console.log( 'new worker state', newWorker.state );
+                    newWorker.addEventListener( 'statechange', () => {
+                        console.log( 'newWorker statechange event', newWorker.state, 'newWorker.active?', newWorker.active );
+                        if ( newWorker.state === 'activated' ) {
+                            console.log( 'firing applicationupdated event' );
+                            document.dispatchEvent( events.ApplicationUpdated() );
+                        }
+                    } );
+                } );
+
             }, function( err ) {
                 // registration failed :(
-                console.log( 'ServiceWorker registration failed: ', err );
+                console.error( 'ServiceWorker registration failed: ', err );
+                _reportOfflineLaunchIncapable();
             } );
         } );
     } else {
@@ -56,16 +75,16 @@ function _swapCache() {
     // document.dispatchEvent( events.ApplicationUpdated() );
 }
 
-function _reportOfflineLaunchCapable( event ) {
+function _reportOfflineLaunchCapable() {
     //console.log( 'Application cache event:', event );
     //$( document ).trigger( 'offlinelaunchcapable' );
-    //document.dispatchEvent( events.OfflineLaunchCapable( true ) );
+    document.dispatchEvent( events.OfflineLaunchCapable( { capable: true } ) );
 }
 
-function _reportOfflineLaunchIncapable( event ) {
+function _reportOfflineLaunchIncapable() {
     //console.log( 'Application cache event:', event );
     //$( document ).trigger( 'offlinelaunchincapable' );
-    // document.dispatchEvent( events.OfflineLaunchCapable( true ) );
+    document.dispatchEvent( events.OfflineLaunchCapable( { capable: false } ) );
 }
 
 export default {
