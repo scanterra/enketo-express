@@ -2,7 +2,6 @@
  * The version, resources and fallback variables above are dynamically prepended by the offline-controller.
  */
 
-////
 const CACHES = [ `enketo-common_${version}` ];
 
 self.addEventListener( 'install', event => {
@@ -50,7 +49,8 @@ self.addEventListener( 'fetch', event => {
             }
             return fetch( event.request, { credentials: 'include' } )
                 .then( response => {
-                    if ( event.request.url.includes( '/x/' ) ) {
+                    // The second clause prevents confusing logging when opening the service worker directly in a separate tab.
+                    if ( event.request.url.includes( '/x/' ) && event.request.url !== event.target.serviceWorker.scriptURL ) {
                         console.error( 'Resource missing from cache?', event.request.url );
                     }
                     // Check if we received a valid response

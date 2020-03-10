@@ -251,11 +251,12 @@ function _removeNonExisting( resource ) {
  * @return {string} Local resource path
  */
 function _getLocalPath( resource ) {
-    const rel = ( resource.indexOf( `${config[ 'base path' ]}/locales/` ) === 0 ) ? '../../' : '../../public';
+    const rel = ( resource.indexOf( `${config[ 'base path' ]}${config['offline path']}/locales/` ) === 0 ) ? '../../' : '../../public';
     const resourceWithoutBase = resource.substring( config[ 'base path' ].length );
     const op = config[ 'offline path' ];
     const resourceWithoutOfflinePath = op ? ( resourceWithoutBase.startsWith( op ) ? resourceWithoutBase.substring( op.length ) : resourceWithoutBase ) : resourceWithoutBase;
     const localResourcePath = path.join( __dirname, rel, url.parse( resourceWithoutOfflinePath ).pathname );
+
     return localResourcePath;
 }
 
