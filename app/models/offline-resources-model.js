@@ -28,8 +28,8 @@ if ( process.env.NODE_ENV === 'test' ) {
  */
 
 function get( html1, html2 ) {
-    const resourcesKey = `off:resources`;
-    const versionKey = `off:version`;
+    const resourcesKey = 'off:resources';
+    const versionKey = 'off:version';
 
     return new Promise( ( resolve, reject ) => {
         // There is only one list of resources for all forms and all languages

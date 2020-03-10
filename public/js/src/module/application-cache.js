@@ -6,7 +6,7 @@ import events from './event';
 import settings from './settings';
 
 function init( survey ) {
-    console.log( ' loading service worker' );
+
     if ( 'serviceWorker' in navigator ) {
         window.addEventListener( 'load', function() {
             navigator.serviceWorker.register( `${settings.basePath}/x/offline-app-worker.js` ).then( function( registration ) {
@@ -15,7 +15,7 @@ function init( survey ) {
                 setInterval( () => registration.update, 60 * 60 * 1000 ); // DEBUG set to 1 minute to test updates during session
 
                 if ( registration.active ) {
-                    _reportOfflineLaunchCapable();
+                    _reportOfflineLaunchCapable( true );
                 }
                 registration.addEventListener( 'updatefound', () => {
                     const newWorker = registration.installing;
@@ -33,60 +33,19 @@ function init( survey ) {
             }, function( err ) {
                 // registration failed :(
                 console.error( 'Offline application service worker registration failed: ', err );
-                _reportOfflineLaunchIncapable();
+                _reportOfflineLaunchCapable( true );
             } );
         } );
     } else {
         console.error( 'Service workers not supported on this browser. This form cannot launch online' );
-        _reportOfflineLaunchIncapable();
+        _reportOfflineLaunchCapable( false );
     }
     return Promise.resolve( survey );
 
-    /*
-    if ( window.applicationCache ) {
-        const status = window.applicationCache.status;
-
-        if ( status === window.applicationCache.IDLE ) {
-            _reportOfflineLaunchCapable();
-        } else if ( status === window.applicationCache.UPDATEREADY ) {
-            _reportOfflineLaunchCapable();
-            _swapCache();
-        }
-
-        $( window.applicationCache )
-            .on( 'cached noupdate updateready', _reportOfflineLaunchCapable )
-            .on( 'updateready', _swapCache )
-            .on( 'obsolete', _reportOfflineLaunchIncapable );
-
-    } else {
-        console.error( 'applicationCache not supported on this browser, this form cannot launch online' );
-    }*/
 }
 
-function _swapCache() {
-    /*
-    console.log( 'Swapping application cache' );
-    // firefox bug: https://bugzilla.mozilla.org/show_bug.cgi?id=769171
-    try {
-        window.applicationCache.swapCache();
-        $( document ).trigger( 'applicationupdated' );
-    } catch ( e ) {
-        console.error( 'Error swapping cache', e );
-    }*/
-    // TODO: swap cache
-    // document.dispatchEvent( events.ApplicationUpdated() );
-}
-
-function _reportOfflineLaunchCapable() {
-    //console.log( 'Application cache event:', event );
-    //$( document ).trigger( 'offlinelaunchcapable' );
-    document.dispatchEvent( events.OfflineLaunchCapable( { capable: true } ) );
-}
-
-function _reportOfflineLaunchIncapable() {
-    //console.log( 'Application cache event:', event );
-    //$( document ).trigger( 'offlinelaunchincapable' );
-    document.dispatchEvent( events.OfflineLaunchCapable( { capable: false } ) );
+function _reportOfflineLaunchCapable( capable = true ) {
+    document.dispatchEvent( events.OfflineLaunchCapable( { capable } ) );
 }
 
 export default {
