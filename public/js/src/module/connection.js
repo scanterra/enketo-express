@@ -31,15 +31,14 @@ function getOnlineStatus() {
                 timeout: 3000
             } )
             .done( response => {
-                // TODO: DOES THIS STILL WORK WITH SERVICEWORKERS?
-                
                 // It is important to check for the content of the no-cache response as it will
                 // start receiving the fallback page specified in the manifest!
                 online = typeof response === 'string' && /connected/.test( response );
                 resolve( online );
             } )
-            .fail( ( jqXHR, textStatus ) => {
-                console.error( 'Failed to establish connection', textStatus );
+            .fail( () => {
+                console.log( 'Failed to establish connection, probably offline' );
+                resolve( false );
             } );
     } );
 }
