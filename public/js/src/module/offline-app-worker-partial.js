@@ -47,6 +47,8 @@ self.addEventListener( 'fetch', event => {
                 return response;
             }
 
+            // TODO: we have a fallback page we could serve when offline, but tbc if that is actually useful at all
+
             return fetch( event.request, { credentials: 'include' } )
                 .then( response => {
                     const isScopedResource = event.request.url.includes( '/x/' );
