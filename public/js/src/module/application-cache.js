@@ -3,12 +3,13 @@
  */
 
 import events from './event';
+import settings from './settings';
 
 function init( survey ) {
     console.log( ' loading service worker' );
     if ( 'serviceWorker' in navigator ) {
         window.addEventListener( 'load', function() {
-            navigator.serviceWorker.register( '/x/offline-app-worker.js' ).then( function( registration ) {
+            navigator.serviceWorker.register( `${settings.basePath}/x/offline-app-worker.js` ).then( function( registration ) {
                 // Registration was successful
                 console.log( 'Offline application service worker registration successful with scope: ', registration.scope );
                 setInterval( () => registration.update, 60 * 60 * 1000 ); // DEBUG set to 1 minute to test updates during session
