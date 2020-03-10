@@ -47,8 +47,8 @@ function getScriptContent( req, res ) {
         ] )
         .then( result => {
             // TODO: if we ever start supporting dialects, we need to change this
-            const lang = req.i18n.language.split( '-' )[ 0 ];
-            return offlineResources.get( result[ 0 ], result[ 1 ], lang );
+            // const lang = req.i18n.language.split( '-' )[ 0 ];
+            return offlineResources.get( result[ 0 ], result[ 1 ] );
         } )
         .then( dynamicContent => {
             return `

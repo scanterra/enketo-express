@@ -1,7 +1,6 @@
 /**  
  * The version, resources and fallback variables above are dynamically prepended by the offline-controller.
  */
-
 const CACHES = [ `enketo-common_${version}` ];
 
 self.addEventListener( 'install', event => {
@@ -44,21 +43,40 @@ self.addEventListener( 'fetch', event => {
         caches.match( event.request )
         .then( response => {
             if ( response ) {
-                console.log( 'returning cached response for', event.request );
+                console.log( 'returning cached response for', event.request.url );
                 return response;
             }
+
             return fetch( event.request, { credentials: 'include' } )
                 .then( response => {
+                    const isScopedResource = event.request.url.includes( '/x/' );
+                    const isTranslation = event.request.url.includes( '/locales/build/' );
+                    const isServiceWorkerScript = event.request.url === event.target.serviceWorker.scriptURL;
+
                     // The second clause prevents confusing logging when opening the service worker directly in a separate tab.
-                    if ( event.request.url.includes( '/x/' ) && event.request.url !== event.target.serviceWorker.scriptURL ) {
+                    if ( isScopedResource && !isServiceWorkerScript && !isTranslation ) {
                         console.error( 'Resource missing from cache?', event.request.url );
                     }
+
                     // Check if we received a valid response
+                    if ( !response || response.status !== 200 || response.type !== 'basic' || !isTranslation ) {
+                        return response;
+                    }
+
+                    // Cache any additional loaded languages
+                    const responseToCache = response.clone();
+
+                    // Cache any non-English language files that are requested
+                    caches.open( CACHES[ 0 ] )
+                        .then( cache => {
+                            cache.put( event.request, responseToCache );
+                        } );
+
                     return response;
                 } )
-                .catch( () => {
+                .catch( e => {
                     // Let fail silently
-                    console.log( 'Failed to fetch resource', event.request.url );
+                    console.log( 'Failed to fetch resource', event.request, e );
                 } );
         } )
     );

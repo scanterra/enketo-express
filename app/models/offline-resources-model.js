@@ -24,16 +24,15 @@ if ( process.env.NODE_ENV === 'test' ) {
  * @function
  * @param {string} html1
  * @param {string} html2
- * @param {string} lang
  * @return {Promise} Promise that resolves with manifest
  */
 
-function get( html1, html2, lang ) {
-    const resourcesKey = `off:${lang}_resources`;
-    const versionKey = `off:${lang}_version`;
+function get( html1, html2 ) {
+    const resourcesKey = `off:resources`;
+    const versionKey = `off:version`;
 
     return new Promise( ( resolve, reject ) => {
-        // each language gets its own manifest
+        // There is only one list of resources for all forms and all languages
         client.get( resourcesKey, ( error, obj ) => {
             if ( error ) {
                 reject( error );
@@ -54,8 +53,8 @@ function get( html1, html2, lang ) {
                 // additional themes
                 resources = resources.concat( _getAdditionalThemes( resources, themesSupported ) );
 
-                // translations
-                resources = resources.concat( _getTranslations( lang ) );
+                // default language (TODO: configurable default?)
+                resources = resources.concat( [ `${config[ 'base path' ]}/x/locales/build/en/translation-combined.json` ] );
 
                 // any resources inside css files
                 resources = resources.concat( _getResourcesFromCss( resources ) );
@@ -67,11 +66,12 @@ function get( html1, html2, lang ) {
                 // remove empties, duplicates and non-http urls
                 resources = resources
                     .filter( _removeEmpties )
-                    .filter( _removeDuplicates )
                     .filter( _removeNonHttpResources );
 
                 // convert relative urls to absolute urls
-                resources = resources.map( _toAbsolute );
+                resources = resources.map( _toAbsolute )
+                    // remove duplicates after converting URL to local URLs
+                    .filter( _removeDuplicates );
 
                 // remove non-existing files,
                 resources = resources
@@ -95,7 +95,7 @@ function get( html1, html2, lang ) {
                         if ( obj.hash !== hash ) {
                             // create a new version
                             const date = new Date().toISOString().replace( 'T', '_' ).replace( ':', '-' );
-                            version = `${date.substring( 0, date.length - 8 )}_${lang}`;
+                            version = `${date.substring( 0, date.length - 8 )}`;
                             // update stored version, don't wait for result
                             _updateVersionObj( versionKey, hash, version );
                         }
@@ -179,23 +179,6 @@ function _getAdditionalThemes( resources, themes ) {
 }
 
 /**
- * @param {string} lang
- * @return {Array<string>} List of translations paths
- */
-function _getTranslations( lang ) {
-    const langs = [];
-
-    // fallback language
-    langs.push( `${config[ 'base path' ]}/x/locales/build/en/translation-combined.json` );
-
-    if ( lang && lang !== 'en' ) {
-        langs.push( `${config[ 'base path' ]}/x/locales/build/${lang}/translation-combined.json` );
-    }
-
-    return langs;
-}
-
-/**
  * @param {Array<string>} resources
  * @return {Array<string>} A list of urls
  */
@@ -209,7 +192,12 @@ function _getResourcesFromCss( resources ) {
             const content = _getResourceContent( resource );
             let matches;
             while ( ( matches = urlReg.exec( content ) ) !== null ) {
-                urls.push( matches[ 1 ] );
+                let url = matches[ 1 ];
+                if ( url.startsWith( '../' ) ) {
+                    // change context one step down from public/css to public/
+                    url = url.substring( 3 );
+                }
+                urls.push( url );
             }
         }
     } );
