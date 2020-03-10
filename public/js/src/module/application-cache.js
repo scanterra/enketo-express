@@ -10,20 +10,20 @@ function init( survey ) {
         window.addEventListener( 'load', function() {
             navigator.serviceWorker.register( '/x/offline-app-worker.js' ).then( function( registration ) {
                 // Registration was successful
-                console.log( 'ServiceWorker registration successful with scope: ', registration.scope );
+                console.log( 'Offline application service worker registration successful with scope: ', registration.scope );
                 setInterval( () => registration.update, 60 * 60 * 1000 ); // DEBUG set to 1 minute to test updates during session
-                console.log( 'active service worker', registration.active );
+
                 if ( registration.active ) {
                     _reportOfflineLaunchCapable();
                 }
                 registration.addEventListener( 'updatefound', () => {
                     const newWorker = registration.installing;
 
-                    console.log( 'new worker state', newWorker.state );
+                    //console.log( 'new worker state', newWorker.state );
                     newWorker.addEventListener( 'statechange', () => {
-                        console.log( 'newWorker statechange event', newWorker.state, 'newWorker.active?', newWorker.active );
+                        //console.log( 'newWorker statechange event', newWorker.state, 'newWorker.active?', newWorker.active );
                         if ( newWorker.state === 'activated' ) {
-                            console.log( 'firing applicationupdated event' );
+                            console.log( 'New offline application service worker activated!' );
                             document.dispatchEvent( events.ApplicationUpdated() );
                         }
                     } );
@@ -31,12 +31,13 @@ function init( survey ) {
 
             }, function( err ) {
                 // registration failed :(
-                console.error( 'ServiceWorker registration failed: ', err );
+                console.error( 'Offline application service worker registration failed: ', err );
                 _reportOfflineLaunchIncapable();
             } );
         } );
     } else {
         console.error( 'Service workers not supported on this browser. This form cannot launch online' );
+        _reportOfflineLaunchIncapable();
     }
     return Promise.resolve( survey );
 

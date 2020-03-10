@@ -88,23 +88,6 @@ function _setAppCacheEventHandlers() {
     document.addEventListener( events.ApplicationUpdated().type, () => {
         gui.feedback( t( 'alert.appupdated.msg' ), 20, t( 'alert.appupdated.heading' ) );
     } );
-
-    /*
-    $( document )
-        .on( 'offlinelaunchcapable', () => {
-            console.log( 'This form is fully offline-capable!' );
-            gui.updateStatus.offlineCapable( true );
-            connection.getManifestVersion( $( 'html' ).attr( 'manifest' ) )
-                .then( gui.updateStatus.applicationVersion );
-        } )
-        .on( 'offlinelaunchincapable', () => {
-            console.error( 'This form cannot (or can no longer) launch offline.' );
-            gui.updateStatus.offlineCapable( false );
-        } )
-        .on( 'applicationupdated', () => {
-            gui.feedback( t( 'alert.appupdated.msg' ), 20, t( 'alert.appupdated.heading' ) );
-        } );
-        */
 }
 
 function _setFormCacheEventHandlers() {
