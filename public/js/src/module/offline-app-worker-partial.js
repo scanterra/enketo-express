@@ -2,7 +2,7 @@
  * The version, resources and fallback variables above are dynamically prepended by the offline-controller.
  */
 const CACHES = [ `enketo-common_${version}` ];
-
+//
 self.addEventListener( 'install', event => {
     self.skipWaiting();
     // Perform install steps
@@ -59,7 +59,7 @@ self.addEventListener( 'fetch', event => {
                     }
 
                     // Check if we received a valid response
-                    if ( !response || response.status !== 200 || response.type !== 'basic' || !isTranslation ) {
+                    if ( !response || response.status !== 200 || response.type !== 'basic' || !isScopedResource ) {
                         return response;
                     }
 
@@ -67,8 +67,11 @@ self.addEventListener( 'fetch', event => {
                     const responseToCache = response.clone();
 
                     // Cache any non-English language files that are requested
+                    // Also, if the cache didn't get built correctly using the explicit resources list,
+                    // just cache whatever is scoped dynamically to self-heal the cache.
                     caches.open( CACHES[ 0 ] )
                         .then( cache => {
+                            console.log( 'Dynamically adding resource to cache', event.request.url );
                             cache.put( event.request, responseToCache );
                         } );
 
