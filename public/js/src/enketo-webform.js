@@ -79,11 +79,14 @@ function _setAppCacheEventHandlers() {
 
     document.addEventListener( events.OfflineLaunchCapable().type, event => {
         const capable = event.detail.capable;
-
         gui.updateStatus.offlineCapable( capable );
-        // TODO
-        // connection.getManifestVersion( $( 'html' ).attr( 'manifest' ) )
-        //        .then( gui.updateStatus.applicationVersion );
+
+        const scriptUrl = applicationCache.serviceWorkerScriptUrl;
+        if ( scriptUrl ) {
+            connection.getServiceWorkerVersion( scriptUrl )
+                .then( gui.updateStatus.applicationVersion );
+        }
+
     } );
     document.addEventListener( events.ApplicationUpdated().type, () => {
         gui.feedback( t( 'alert.appupdated.msg' ), 20, t( 'alert.appupdated.heading' ) );

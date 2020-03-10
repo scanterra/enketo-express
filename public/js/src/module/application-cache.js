@@ -90,5 +90,11 @@ function _reportOfflineLaunchIncapable() {
 }
 
 export default {
-    init
+    init,
+    get serviceWorkerScriptUrl() {
+        if ( 'serviceWorker' in navigator && navigator.serviceWorker.controller ) {
+            return navigator.serviceWorker.controller.scriptURL;
+        }
+        return null;
+    }
 };

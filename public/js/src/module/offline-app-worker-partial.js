@@ -2,7 +2,7 @@
  * The version, resources and fallback variables above are dynamically prepended by the offline-controller.
  */
 const CACHES = [ `enketo-common_${version}` ];
-//
+
 self.addEventListener( 'install', event => {
     self.skipWaiting();
     // Perform install steps
@@ -59,7 +59,7 @@ self.addEventListener( 'fetch', event => {
                     }
 
                     // Check if we received a valid response
-                    if ( !response || response.status !== 200 || response.type !== 'basic' || !isScopedResource ) {
+                    if ( !response || response.status !== 200 || response.type !== 'basic' || !isScopedResource || isServiceWorkerScript ) {
                         return response;
                     }
 
