@@ -49,7 +49,7 @@ self.addEventListener( 'fetch', event => {
 
             // TODO: we have a fallback page we could serve when offline, but tbc if that is actually useful at all
 
-            return fetch( event.request, { credentials: 'include' } )
+            return fetch( event.request, { credentials: 'same-origin' } )
                 .then( response => {
                     const isScopedResource = event.request.url.includes( '/x/' );
                     const isTranslation = event.request.url.includes( '/locales/build/' );
