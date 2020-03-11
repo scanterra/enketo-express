@@ -74,7 +74,6 @@ function _showErrorOrAuthenticate( error ) {
     }
 }
 
-// TODO: does it make more sense to let application-cache.js take care of this, and not need the 2 custom events?
 function _setAppCacheEventHandlers() {
 
     document.addEventListener( events.OfflineLaunchCapable().type, event => {
@@ -88,6 +87,7 @@ function _setAppCacheEventHandlers() {
         }
 
     } );
+
     document.addEventListener( events.ApplicationUpdated().type, () => {
         gui.feedback( t( 'alert.appupdated.msg' ), 20, t( 'alert.appupdated.heading' ) );
     } );
