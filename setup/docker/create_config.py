@@ -50,9 +50,18 @@ def create_config():
     config['linked form and data server'].setdefault('encryption key', get_or_create_encryption_key())
     
     # Set the Docker Redis settings.
-    config.setdefault('redis', dict()).setdefault('main', dict()).setdefault('host', 'redis_main')
-    config['redis'].setdefault('cache', dict()).setdefault('host', 'redis_cache')
-    config['redis']['cache'].setdefault('port', '6379')
+    REDIS_MAIN = os.environ.get('ENKETO_REDIS_MAIN', 'redis-main')
+    REDIS_MAIN_PORT = os.environ.get('ENKETO_REDIS_MAIN_PORT', '6379')
+    REDIS_CACHE = os.environ.get('ENKETO_REDIS_CACHE', 'redis-cache')
+    REDIS_CACHE_PORT = os.environ.get('ENKETO_REDIS_CACHE_PORT', '6380')
+
+    config.setdefault('redis', dict())
+    config['redis'].setdefault('main', dict())
+    config['redis']['main']['host'] = REDIS_MAIN
+    config['redis']['main']['port'] = REDIS_MAIN_PORT
+    config['redis'].setdefault('cache', dict())
+    config['redis']['cache']['host'] = REDIS_CACHE
+    config['redis']['cache']['port'] = REDIS_CACHE_PORT
 
     # Write the potentially-updated config file to disk.
     with open(CONFIG_FILE_PATH, 'w') as config_file:

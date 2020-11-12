@@ -23,6 +23,7 @@ Las mismas utilizadas en [enketo-express](https://github.com/enketo/enketo-expre
 ## Setup
 
 La generación de imágenes solo utiliza el Dockerfile local del repositorio.
+Recordar generar el archivo `config/config.json` o `config/.env` con las variables necesarias.
 
 - Requerimientos:
     - [`Docker`](https://docs.docker.com/)
