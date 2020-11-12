@@ -1,8 +1,14 @@
+# Enketo Express
+
+[![Actions Status](https://github.com/scanterra/enketo-express/workflows/build/badge.svg)](https://github.com/scanterra/enketo-express/actions)
+
+
 ## Contenido
 
 * [Informacion general](#informacion-general)
 * [Tecnologias](#tecnologias)
 * [Setup](#setup)
+* [Referencias](#referencias)
 
 ## Informacion General
 
@@ -23,12 +29,21 @@ Las mismas utilizadas en [enketo-express](https://github.com/enketo/enketo-expre
 ## Setup
 
 La generación de imágenes solo utiliza el Dockerfile local del repositorio.
-Recordar generar el archivo `config/config.json` o `config/.env` con las variables necesarias.
+Recordar generar el archivo `config/config.json` o `config/.env` con las variables necesarias. [DOC](./config/README.md)
 
 - Requerimientos:
     - [`Docker`](https://docs.docker.com/)
 - Generar imágen `scanterra/kobotoolbox_enketo_express:latest`
     - `docker build -t scanterra/kobotoolbox_enketo_express:latest .`
+
+### CI/CD
+
+Se deben configurar los siguientes secrets en este repositorio:
+- **Docker Hub**, credenciales con los permisos necesarios para acceder, pullear y pushear a la organización [**Scanterra**](https://hub.docker.com/orgs/scanterra).
+  - **DOCKERHUB_USERNAME:** nombre del usuario
+  - **DOCKERHUB_PASSWORD:** contraseña del usuario
+
+Ver este [documento](https://github.com/scanterra/scanterra_quickstart) con la información del flujo de CI/CD.
 
 ## Referencias
 
