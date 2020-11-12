@@ -24,7 +24,7 @@ Las mismas utilizadas en [enketo-express](https://github.com/enketo/enketo-expre
   - [requerimientos JS](package.json)
 
 * Imagenes:
-- [enketo-express](https://hub.docker.com/repository/docker/scanterra/kobotoolbox_enketo-express)
+  - [enketo-express](https://hub.docker.com/repository/docker/scanterra/kobotoolbox_enketo-express)
 
 ## Setup
 
