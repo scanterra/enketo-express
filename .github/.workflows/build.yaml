@@ -3,12 +3,13 @@ name: build
 on:
   push:
     branches:
-      - dev
-      - release/*
-      - main
+      - develop_st
+      - release_st/*
+      - master_st
 
 env:
-  DOCKERHUB_REPO_NAME: basic-action
+  DOCKERHUB_ORGANIZATION: scanterra
+  DOCKERHUB_REPO_NAME: kobotoolbox_enketo_express
 
 jobs:
   build-job:
@@ -31,6 +32,6 @@ jobs:
       - name: Build
         run: docker build -t $DOCKERHUB_REPO_NAME .
       - name: Tags
-        run: docker tag $DOCKERHUB_REPO_NAME ${{ secrets.DOCKERHUB_USERNAME }}/$DOCKERHUB_REPO_NAME:${{ steps.prep.outputs.image_tag }}
+        run: docker tag $DOCKERHUB_REPO_NAME $DOCKERHUB_ORGANIZATION/$DOCKERHUB_REPO_NAME:${{ steps.prep.outputs.image_tag }}
       - name: Push
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/$DOCKERHUB_REPO_NAME:${{ steps.prep.outputs.image_tag }}
+        run: docker push $DOCKERHUB_ORGANIZATION/$DOCKERHUB_REPO_NAME:${{ steps.prep.outputs.image_tag }}
